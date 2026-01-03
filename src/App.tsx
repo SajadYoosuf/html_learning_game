@@ -1,25 +1,62 @@
 import { useState, useEffect } from 'react';
-import { Terminal, Play, ChevronRight, Check } from 'lucide-react';
+import { Terminal, ChevronLeft, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { CodeEditor } from './components/CodeEditor';
+import { InstructionPanel } from './components/InstructionPanel';
+import { Roadmap } from './components/Roadmap';
 import { levels } from './data/levels';
 import './App.css';
 
 function App() {
-  const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<'roadmap' | 'editor'>('roadmap');
+  
+  // Persist Unlock Level
+  const [unlockedLevelId, setUnlockedLevelId] = useState(() => {
+    const saved = localStorage.getItem('codenaut-level');
+    return saved ? parseInt(saved, 10) : 1;
+  });
+
+  const [currentLevelId, setCurrentLevelId] = useState(unlockedLevelId);
+
   const [code, setCode] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  const [xp, setXp] = useState(0);
-  const [streak, setStreak] = useState(0);
+  
+  // Persist XP
+  const [xp, setXp] = useState(() => {
+    const saved = localStorage.getItem('codenaut-xp');
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
-  const currentLevel = levels[currentLevelIndex];
+  // Save state effects
+  useEffect(() => {
+    localStorage.setItem('codenaut-level', unlockedLevelId.toString());
+  }, [unlockedLevelId]);
+
+  useEffect(() => {
+    localStorage.setItem('codenaut-xp', xp.toString());
+  }, [xp]);
+
+  // Derived state
+  const currentLevelIndex = levels.findIndex(l => l.id === currentLevelId);
+  const currentLevel = levels[currentLevelIndex] || levels[0];
 
   useEffect(() => {
     // Reset code when level changes
-    setCode(currentLevel.initialCode);
-    setShowSuccess(false);
-  }, [currentLevelIndex]);
+    if (currentLevel) {
+      setCode(currentLevel.initialCode);
+      setShowSuccess(false);
+    }
+  }, [currentLevelId]);
+
+  const handleSelectLevel = (id: number) => {
+    setCurrentLevelId(id);
+    setViewMode('editor');
+  };
+
+  const handleReturnToMap = () => {
+    setViewMode('roadmap');
+  };
 
   const handleRun = () => {
     const result = currentLevel.validation(code);
@@ -32,35 +69,27 @@ function App() {
           colors: ['#7000ff', '#00f0ff', '#ff0055']
         });
         setXp(prev => prev + 100);
-        setStreak(prev => prev + 1);
         setShowSuccess(true);
+        
+        // Unlock next Level
+        if (currentLevelId >= unlockedLevelId && currentLevelId < levels.length) {
+            setUnlockedLevelId(currentLevelId + 1);
+        }
       }
     } else {
-      // Shake animation or error feedback could go here
-      // For now, we'll just log or show a toast if we had one.
-      // Maybe a simple alert or just relying on the user seeing the output not matching
       alert(`Mission Failed: ${result.error}`);
-      setStreak(0);
     }
   };
 
   const handleNextLevel = () => {
     if (currentLevelIndex < levels.length - 1) {
-      setCurrentLevelIndex(prev => prev + 1);
+      const nextId = levels[currentLevelIndex + 1].id;
+      setCurrentLevelId(nextId);
+      // Reset success state handled by useEffect
     } else {
       alert("All missions completed! You are now a HTML HTML Officer.");
+      setViewMode('roadmap');
     }
-  };
-
-  // Simple Markdown renderer helper
-  const renderMarkdown = (text: string) => {
-    const parts = text.split(/(`[^`]+`)/);
-    return parts.map((part, i) => {
-      if (part.startsWith('`') && part.endsWith('`')) {
-        return <code key={i}>{part.slice(1, -1)}</code>;
-      }
-      return <span key={i}>{part}</span>;
-    });
   };
 
   return (
@@ -71,7 +100,7 @@ function App() {
         animate={{ y: 0, opacity: 1 }}
         className="top-bar"
       >
-        <div className="brand">
+        <div className="brand" onClick={() => setViewMode('roadmap')} style={{cursor: 'pointer'}}>
           <Terminal size={24} className="brand-icon" />
           <span>Code<span style={{color: 'var(--primary)'}}>Naut</span></span>
         </div>
@@ -81,74 +110,70 @@ function App() {
             <span className="stat-label">EXP</span>
             <span className="stat-value">{xp}</span>
           </div>
-          <div className="stat-item">
-            <span className="stat-label">STREAK</span>
-            <span className="stat-value">{streak} 🔥</span>
-          </div>
           <div className="stat-item" style={{ borderColor: 'var(--primary)' }}>
             <span className="stat-label">LEVEL</span>
-            <span className="stat-value">{currentLevel.id}</span>
+            <span className="stat-value">{unlockedLevelId}</span>
           </div>
         </div>
       </motion.header>
 
-      <main className="main-grid">
-        {/* Left: Instruction */}
-        <motion.div 
-          key={currentLevel.id}
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="instruction-panel"
-        >
-          <div className="instruction-card">
-            <div className="mission-title">Mission: {currentLevel.missionName}</div>
-            <h1 className="level-title">{currentLevel.title}</h1>
-            <p className="description">{currentLevel.description}</p>
-            
-            {/* {currentLevel.exampleSnippet && (
-              <div className="example-box">
-                <span className="example-label">Example Code</span>
-                <pre className="example-code">
-                  <code>{currentLevel.exampleSnippet}</code>
-                </pre>
-              </div>
-            )} */}
-            
-            <div className="goal-box">
-              <span className="goal-label">Objective</span>
-              <p className="goal-text markdown-instr">
-                {renderMarkdown(currentLevel.instruction)}
-              </p>
-            </div>
-
-            <div className="action-area">
-              <button className="btn-primary" onClick={handleRun}>
-                <Play size={20} />
-                DEPLOY CODE
+      <main className="main-content">
+        <AnimatePresence mode="wait">
+          {viewMode === 'roadmap' ? (
+             <motion.div 
+               key="roadmap"
+               className="view-wrapper"
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+             >
+               <Roadmap 
+                 currentLevelId={currentLevelId} 
+                 unlockedLevelId={unlockedLevelId}
+                 onSelectLevel={handleSelectLevel} 
+               />
+             </motion.div>
+          ) : (
+            <motion.div 
+              key="editor"
+              className="view-wrapper editor-grid"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+            >
+              {/* Back button overlay or integrated */}
+              <button className="back-btn" onClick={handleReturnToMap}>
+                <ChevronLeft size={20} /> MAP
               </button>
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Right: Workspace */}
-        <div className="workspace-panel">
-          {/* Code Editor */}
-          <div style={{ flex: 1.5, minHeight: 0 }}>
-             <CodeEditor code={code} onChange={setCode} />
-          </div>
+              <div className="left-panel">
+                <InstructionPanel level={currentLevel} onRun={handleRun} />
+              </div>
 
-          {/* Preview */}
-          <div className="preview-container">
-             <div className="preview-label">Live Feed</div>
-             <iframe 
-               title="preview"
-               srcDoc={code} // React handles this safely usually, but for a learning app this is standard
-               style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
-               sandbox="allow-scripts"
-             />
-          </div>
-        </div>
+              <div className="right-panel">
+                 <div className="code-section">
+                    <CodeEditor code={code} onChange={setCode} />
+                 </div>
+                 <div className="preview-section">
+                    <div className="preview-header">
+                       <span className="preview-title">Live Preview</span>
+                       <div className="preview-dots">
+                          <div className="dot red"></div>
+                          <div className="dot yellow"></div>
+                          <div className="dot green"></div>
+                       </div>
+                    </div>
+                    <iframe 
+                        title="preview"
+                        srcDoc={code}
+                        style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
+                        sandbox="allow-scripts"
+                    />
+                 </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Success Modal */}
@@ -169,11 +194,16 @@ function App() {
                 <Check size={40} strokeWidth={4} />
               </div>
               <h2 className="success-title">Mission Accomplished!</h2>
-              <p className="success-sub">Signal established strongly. Ready for next transmission?</p>
+              <p className="success-sub">Good work Cadet. Concept Secured.</p>
               
-              <button className="btn-primary" onClick={handleNextLevel}>
-                Next Level <ChevronRight size={20} />
-              </button>
+              <div className="modal-actions">
+                <button className="btn-secondary" onClick={() => { setShowSuccess(false); setViewMode('roadmap'); }}>
+                   Return to Map
+                </button>
+                <button className="btn-primary" onClick={handleNextLevel}>
+                   Next Mission
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

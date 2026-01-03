@@ -1,0 +1,187 @@
+.roadmap-container {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.galaxy-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.2) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 40%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.roadmap-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 20px var(--primary-glow);
+}
+
+.roadmap-path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 100px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.level-node-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.level-node {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-code);
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.level-node.locked {
+  background: var(--bg-panel);
+  border: 2px solid #333;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.level-node.unlocked {
+  background: var(--bg-panel);
+  border: 2px solid var(--primary);
+  color: white;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.level-node.completed {
+  background: var(--success);
+  border-color: var(--success);
+  color: black;
+  box-shadow: 0 0 20px rgba(0, 255, 157, 0.4);
+}
+
+.level-node.current {
+   border-color: white;
+   background: var(--primary);
+}
+
+.pulse-ring {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.connector-line {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  height: 80px;
+  width: 2px;
+  background: #333;
+  transform-origin: top center;
+  /* Since we are doing zig-zag, pure vertical lines strictly won't connect perfectly center-to-center without complex SVG. 
+     For a simple CSS zig-zag, we usually just accept dashed lines or use SVG. 
+     But let's try to just have a vertical dashed line down the center of the 'flow' and nodes sit on it?
+     No, the user requested a nice roadmap. I offset the nodes with transform. The lines would need rotation.
+     Let's simplify: Vertical line down the middle of the wrapper, but the wrapper is transformed.
+     Actually, let's keep it simple: Dotted line connecting everything down the center, nodes sit on top.
+  */
+  display: none; /* Disabling simple CSS line for zig zag, replacing with SVG would be better but keeping it simple for now */
+}
+
+/* Better Line Approach: pseudo element on wrapper is hard with transform. 
+   Let's just use a central spine if we can't do perfect connections easily without SVG.
+   But I want "constellation". 
+   Let's just add a central line behind everything.
+*/
+
+.roadmap-path::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--primary) 10%, var(--primary) 90%, transparent);
+  opacity: 0.3;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+
+.level-info {
+  position: absolute;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.level-info.left {
+  right: 50%;
+  margin-right: 50px;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.level-info.right {
+  left: 50%;
+  margin-left: 50px;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.level-title {
+  font-size: 12px;
+  color: var(--secondary);
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.level-name {
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
+}

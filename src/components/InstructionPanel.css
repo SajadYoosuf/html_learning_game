@@ -1,0 +1,187 @@
+.instruction-card {
+  background: var(--bg-panel);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 24px 24px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mission-meta {
+  margin-bottom: 24px;
+}
+
+.mission-id {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--primary);
+  opacity: 0.8;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mission-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 24px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+  box-shadow: 0 -2px 10px var(--primary-glow);
+}
+
+.card-body {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.description {
+  color: var(--text-dim);
+  line-height: 1.6;
+  font-size: 15px;
+  margin: 0;
+}
+
+.analogy-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid var(--secondary);
+  padding: 16px;
+  border-radius: 0 4px 4px 0;
+  font-style: italic;
+}
+
+.analogy-label {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    margin-top: auto;
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 240, 255, 0.1);
+}
+
+.goal-box {
+    background: rgba(112, 0, 255, 0.1);
+    border: 1px solid var(--primary-glow);
+    padding: 20px;
+    border-radius: var(--radius-sm);
+  }
+  
+  .goal-label {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .goal-text {
+    font-family: var(--font-code);
+    color: var(--text-main);
+  }
+  
+  .action-area {
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .example-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+  }
+  
+  .example-label {
+    color: var(--secondary);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .example-code {
+    font-family: var(--font-code);
+    color: var(--text-dim);
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap; 
+  }

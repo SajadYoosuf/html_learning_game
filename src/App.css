@@ -1,10 +1,10 @@
+
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 24px;
-  gap: 24px;
   background: radial-gradient(circle at 15% 50%, #15152a 0%, var(--bg-deep) 40%);
+  overflow: hidden;
 }
 
 .top-bar {
@@ -12,6 +12,10 @@
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  padding: 0 24px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 10;
 }
 
 .brand {
@@ -39,182 +43,111 @@
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.05);
-  padding: 8px 16px;
+  padding: 6px 16px;
   border-radius: 50px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-weight: 600;
+  font-size: 14px;
 }
 
 .stat-value {
   color: var(--secondary);
 }
 
-.main-grid {
+.main-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.view-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.editor-grid {
   display: grid;
   grid-template-columns: 400px 1fr;
-  gap: 24px;
-  flex: 1;
-  min-height: 0; /* Fix nested scroll issues */
-}
-
-.instruction-panel, .workspace-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: 100%;
-}
-
-.instruction-card {
-  background: var(--bg-panel);
-  border-radius: var(--radius-md);
-  padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  overflow-y: auto; /* Enable scrolling if content is too long */
-}
-
-.instruction-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--primary), var(--secondary));
-}
-
-.mission-title {
-  color: var(--secondary);
-  font-family: var(--font-code);
-  font-size: 14px;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.level-title {
-  font-size: 32px;
-  margin-bottom: 24px;
-  font-weight: 700;
-}
-
-.description {
-  color: var(--text-dim);
-  line-height: 1.6;
-  margin-bottom: 32px;
-  font-size: 16px;
-}
-
-.example-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 24px;
-}
-
-.example-label {
-  color: var(--secondary);
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.example-code {
-  font-family: var(--font-code);
-  color: var(--text-dim);
-  font-size: 14px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 12px;
-  border-radius: 4px;
-  overflow-x: auto;
-  white-space: pre-wrap; /* Wrap long lines */
-}
-
-.goal-box {
-  background: rgba(112, 0, 255, 0.1);
-  border: 1px solid var(--primary-glow);
+  gap: 20px;
   padding: 20px;
-  border-radius: var(--radius-sm);
-  margin-bottom: auto;
+  height: 100%;
+  position: relative;
 }
 
-.goal-label {
+.back-btn {
+  position: absolute;
+  top: -45px; /* In the header space visually */
+  left: 200px; /* Offset from brand */
+  background: transparent;
+  border: 1px solid var(--primary);
   color: var(--primary);
-  font-weight: 700;
+  padding: 6px 16px;
   font-size: 12px;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.goal-text {
-  font-family: var(--font-code);
-  color: var(--text-main);
-}
-
-.action-area {
-  margin-top: 24px;
-  display: flex;
-  gap: 16px;
-  /* Ensure button stays at bottom if content pushes it, but margin-bottom: auto on goal-box handles spacing */
-  flex-shrink: 0;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  padding: 16px 32px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  flex: 1;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 20;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  transition: all 0.2s;
-  box-shadow: 0 4px 20px var(--primary-glow);
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--primary-glow);
+.back-btn:hover {
+  background: var(--primary);
+  color: white;
 }
 
-.workspace-split {
+.left-panel {
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+}
+
+.right-panel {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.preview-container {
+.code-section {
+  flex: 1.5;
+  min-height: 0;
+}
+
+.preview-section {
   flex: 1;
+  min-height: 0;
   background: white;
-  border-radius: var(--radius-md);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  position: relative;
-  border: 4px solid var(--bg-panel);
+  border: 4px solid var(--vscode-bg); /* Match editor theme border or similar */
 }
 
-.preview-label {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
+.preview-header {
+  height: 30px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+.preview-title {
+  color: #333;
+  font-size: 12px;
+  font-weight: bold;
   text-transform: uppercase;
-  font-weight: 700;
-  pointer-events: none;
+}
+
+.preview-dots {
+  display: flex;
+  gap: 6px;
 }
 
 /* Modal Overlay */
@@ -239,7 +172,7 @@
   text-align: center;
   border: 1px solid var(--success);
   box-shadow: 0 0 50px rgba(0, 255, 157, 0.2);
-  width: 400px;
+  width: 450px;
 }
 
 .success-icon {
@@ -265,10 +198,41 @@
   margin-bottom: 32px;
 }
 
-.markdown-instr code {
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 1px solid #555;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
   background: rgba(255,255,255,0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: var(--font-code);
-  color: var(--secondary);
 }
